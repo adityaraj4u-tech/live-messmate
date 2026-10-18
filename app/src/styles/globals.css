@@ -67,7 +67,7 @@
 
 /* Circular orbit: the photographs move around the center while staying upright. */
 .food-orbit-scene {
-  --food-orbit-radius: 36%;
+  --food-orbit-offset: -155px;
   isolation: isolate;
 }
 .food-orbit-ring {
@@ -89,7 +89,7 @@
   to { transform: rotate(-360deg); }
 }
 @media (max-width: 639px) {
-  .food-orbit-scene { --food-orbit-radius: 35%; }
+  .food-orbit-scene { --food-orbit-offset: -91px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .food-orbit-spin, .food-orbit-counter { animation: none !important; }
