@@ -112,3 +112,23 @@
     }
   }
 }
+
+/* ── Premium food-orbit animation (hero background) ── */
+@keyframes food-orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-food-orbit {
+  animation: food-orbit 90s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-food-orbit {
+    animation: none;
+  }
+}
