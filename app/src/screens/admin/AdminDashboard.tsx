@@ -149,6 +149,7 @@ export function AdminDashboard({ email }: { email: string }) {
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden text-sm text-[#66736A] sm:inline">{email}</span>
+            <Link href="/admin/users" className="rounded-xl border border-[#DDE3DC] px-4 py-2.5 text-sm font-semibold hover:bg-[#F8F7F2]">Manage users</Link>
             <button onClick={signOut} className="rounded-xl border border-[#DDE3DC] px-4 py-2.5 text-sm font-semibold hover:bg-[#F8F7F2]">Sign out</button>
           </div>
         </div>
