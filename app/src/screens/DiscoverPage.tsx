@@ -1,5 +1,6 @@
 /**
  * MessMate — Discover Food Page
+ * Phase 2: result count, clearer empty state, refined spacing
  */
 
 "use client";
@@ -53,10 +54,15 @@ export function DiscoverPage({
     });
   }, [listings, filters]);
 
+  const availableCount = filtered.filter(
+    (l) =>
+      getAvailabilityStatus(l.portionsRemaining, l.portionsTotal) !== "sold_out"
+  ).length;
+
   return (
     <div className={cn("min-h-dvh bg-ivory", className)}>
       <div className="container py-8 md:py-12">
-        <header className="mb-8 md:mb-10">
+        <header className="mb-6 md:mb-8">
           <h1 className="text-display-sm md:text-display text-forest font-bold tracking-tight">
             Discover Food
           </h1>
@@ -66,7 +72,16 @@ export function DiscoverPage({
           </p>
         </header>
 
-        <FilterBar value={filters} onChange={setFilters} className="mb-8" />
+        <div className="sticky top-[72px] z-20 -mx-4 px-4 py-3 md:static md:mx-0 md:px-0 md:py-0 bg-ivory/95 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none mb-6 md:mb-8">
+          <FilterBar value={filters} onChange={setFilters} />
+          {!loading && !error && (
+            <p className="mt-3 text-caption text-muted" aria-live="polite">
+              {filtered.length === 0
+                ? "No matches"
+                : `${availableCount} available · ${filtered.length} total`}
+            </p>
+          )}
+        </div>
 
         {loading ? (
           <LoadingGrid count={6} />
@@ -75,7 +90,7 @@ export function DiscoverPage({
         ) : filtered.length === 0 ? (
           <EmptyState
             title="No matching food right now"
-            description="Try a different meal type or check back closer to meal times."
+            description="Try a different meal type or check back closer to meal times (Breakfast 9–10, Lunch 1–2, Dinner 9–10)."
             actionLabel="Clear filters"
             onAction={() =>
               setFilters({ mealType: "all", availability: "all" })

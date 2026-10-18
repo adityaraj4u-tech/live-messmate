@@ -1,5 +1,6 @@
 /**
  * MessMate — Empty, Loading, Error states
+ * Phase 2: refined visual hierarchy and spacing
  */
 
 import * as React from "react";
@@ -24,11 +25,15 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center text-center py-16 px-6",
+        "flex flex-col items-center justify-center text-center py-20 px-6",
         className
       )}
+      role="status"
     >
-      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-sage">
+      <div
+        className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-sage shadow-sm"
+        aria-hidden="true"
+      >
         <svg
           width="28"
           height="28"
@@ -39,7 +44,6 @@ export function EmptyState({
           strokeLinecap="round"
           strokeLinejoin="round"
           className="text-forest"
-          aria-hidden="true"
         >
           <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
           <path d="M7 2v20" />
@@ -47,9 +51,11 @@ export function EmptyState({
         </svg>
       </div>
       <h3 className="text-heading-sm text-forest font-semibold">{title}</h3>
-      <p className="mt-2 max-w-sm text-body-sm text-muted">{description}</p>
+      <p className="mt-2.5 max-w-sm text-body-sm text-muted leading-relaxed">
+        {description}
+      </p>
       {onAction && (
-        <Button variant="outline" className="mt-6" onClick={onAction}>
+        <Button variant="outline" className="mt-7" onClick={onAction}>
           {actionLabel}
         </Button>
       )}
@@ -64,6 +70,7 @@ export function FoodCardSkeleton({ className }: { className?: string }) {
         "rounded-lg border border-border bg-ivory p-5 shadow-card animate-pulse",
         className
       )}
+      aria-hidden="true"
     >
       <div className="flex justify-between gap-3">
         <div className="flex-1 space-y-2">
@@ -84,7 +91,11 @@ export function FoodCardSkeleton({ className }: { className?: string }) {
 
 export function LoadingGrid({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+    <div
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5"
+      aria-busy="true"
+      aria-label="Loading food listings"
+    >
       {Array.from({ length: count }).map((_, i) => (
         <FoodCardSkeleton key={i} />
       ))}
@@ -108,14 +119,36 @@ export function ErrorState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center text-center py-16 px-6",
+        "flex flex-col items-center justify-center text-center py-20 px-6",
         className
       )}
+      role="alert"
     >
+      <div
+        className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-red-50"
+        aria-hidden="true"
+      >
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-red-600"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 8v4M12 16h.01" />
+        </svg>
+      </div>
       <h3 className="text-heading-sm text-forest font-semibold">{title}</h3>
-      <p className="mt-2 max-w-sm text-body-sm text-muted">{description}</p>
+      <p className="mt-2.5 max-w-sm text-body-sm text-muted leading-relaxed">
+        {description}
+      </p>
       {onRetry && (
-        <Button variant="secondary" className="mt-6" onClick={onRetry}>
+        <Button variant="secondary" className="mt-7" onClick={onRetry}>
           Try Again
         </Button>
       )}

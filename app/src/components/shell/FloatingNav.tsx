@@ -1,5 +1,6 @@
 /**
  * MessMate — Floating Navigation
+ * Phase 2: improved mobile UX, Escape key, scroll lock, focus management
  */
 
 "use client";
@@ -21,12 +22,38 @@ export function FloatingNav({ className }: { className?: string }) {
   const router = useRouter();
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const menuRef = React.useRef<HTMLDivElement>(null);
+  const toggleRef = React.useRef<HTMLButtonElement>(null);
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Close on Escape + restore focus
+  React.useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMobileOpen(false);
+        toggleRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
+
+  // Prevent body scroll when mobile menu is open
+  React.useEffect(() => {
+    if (mobileOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [mobileOpen]);
 
   return (
     <header
@@ -46,7 +73,7 @@ export function FloatingNav({ className }: { className?: string }) {
         >
           <Link
             href="/"
-            className="text-label font-bold text-forest tracking-tight shrink-0"
+            className="text-label font-bold text-forest tracking-tight shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest rounded-sm"
           >
             {brand.name}
           </Link>
@@ -56,7 +83,7 @@ export function FloatingNav({ className }: { className?: string }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-label text-charcoal hover:text-forest transition-colors min-h-touch flex items-center"
+                className="text-label text-charcoal hover:text-forest transition-colors min-h-touch flex items-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest rounded-sm"
               >
                 {link.label}
               </Link>
@@ -72,10 +99,12 @@ export function FloatingNav({ className }: { className?: string }) {
               Find Food
             </Button>
             <button
+              ref={toggleRef}
               type="button"
-              className="md:hidden inline-flex items-center justify-center h-10 w-10 min-h-touch min-w-touch rounded-md text-forest hover:bg-sage/50 transition-colors"
+              className="md:hidden inline-flex items-center justify-center h-10 w-10 min-h-touch min-w-touch rounded-md text-forest hover:bg-sage/50 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest"
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
+              aria-controls="mobile-menu"
               onClick={() => setMobileOpen((o) => !o)}
             >
               {mobileOpen ? (
@@ -92,13 +121,20 @@ export function FloatingNav({ className }: { className?: string }) {
         </nav>
 
         {mobileOpen && (
-          <div className="md:hidden mt-2 rounded-xl border border-border bg-ivory/95 backdrop-blur-md p-4 shadow-nav">
+          <div
+            id="mobile-menu"
+            ref={menuRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
+            className="md:hidden mt-2 rounded-xl border border-border bg-ivory/95 backdrop-blur-md p-4 shadow-nav animate-in fade-in slide-in-from-top-2 duration-200"
+          >
             <div className="flex flex-col gap-1">
               {links.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-left text-label text-charcoal hover:text-forest py-2.5 px-2 rounded-md hover:bg-sage/40 transition-colors min-h-touch"
+                  className="text-left text-label text-charcoal hover:text-forest py-2.5 px-2 rounded-md hover:bg-sage/40 transition-colors min-h-touch focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest"
                   onClick={() => setMobileOpen(false)}
                 >
                   {link.label}

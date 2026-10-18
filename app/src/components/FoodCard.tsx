@@ -1,6 +1,6 @@
 /**
  * MessMate — FoodCard
- * Primary customer-facing unit.
+ * Phase 2: refined hover micro-interaction, clearer sold-out state, a11y
  */
 
 "use client";
@@ -43,8 +43,9 @@ export function FoodCard({
       interactive={!isSoldOut}
       padding="md"
       className={cn(
-        "flex flex-col h-full",
-        isSoldOut && "opacity-70",
+        "flex flex-col h-full transition-all duration-normal ease-out-expo",
+        !isSoldOut && "hover:-translate-y-0.5 hover:shadow-card-hover",
+        isSoldOut && "opacity-65 grayscale-[0.15]",
         isLimited && "ring-1 ring-sage",
         className
       )}
@@ -68,7 +69,7 @@ export function FoodCard({
           end={listing.pickupEnd}
           date={listing.pickupDate}
         />
-        <p className="text-caption text-muted">
+        <p className="text-caption text-muted" aria-live="polite">
           {isSoldOut
             ? "No portions left"
             : `${listing.portionsRemaining} of ${listing.portionsTotal} portions left`}
@@ -86,6 +87,7 @@ export function FoodCard({
           variant={isSoldOut ? "outline" : "primary"}
           fullWidth
           disabled={isSoldOut}
+          aria-disabled={isSoldOut}
           onClick={() => onReserve?.(listing)}
         >
           {isSoldOut ? "Sold Out" : "Reserve Portion"}
