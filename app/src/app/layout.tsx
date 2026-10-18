@@ -28,7 +28,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={manrope.variable}>
       <body className="font-sans">
-        <AppShell>{children}</AppShell>
+        <a href="#main-content" className="skip-link">
+          Skip to content
+        </a>
+        <AppShell>
+          <div id="main-content">{children}</div>
+        </AppShell>
       </body>
     </html>
   );
