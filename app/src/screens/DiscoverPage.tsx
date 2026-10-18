@@ -1,6 +1,6 @@
 /**
  * MessMate — Discover Food Page
- * Phase 2: result count, clearer empty state, refined spacing
+ * Phase 3: loads listings via data layer (Supabase when configured, else sample)
  */
 
 "use client";
@@ -15,28 +15,51 @@ import {
   ErrorState,
   type FilterState,
 } from "@/components";
-import { sampleListings, getAvailabilityStatus } from "@/lib/sample-data";
+import { getListings } from "@/lib/listings";
+import { getAvailabilityStatus } from "@/lib/sample-data";
 import type { FoodListing } from "@/types";
 import { cn } from "@/lib/utils";
 
 export interface DiscoverPageProps {
-  listings?: FoodListing[];
-  loading?: boolean;
-  error?: boolean;
   className?: string;
 }
 
-export function DiscoverPage({
-  listings = sampleListings,
-  loading = false,
-  error = false,
-  className,
-}: DiscoverPageProps) {
+export function DiscoverPage({ className }: DiscoverPageProps) {
   const router = useRouter();
+  const [listings, setListings] = React.useState<FoodListing[]>([]);
+  const [source, setSource] = React.useState<"supabase" | "sample">("sample");
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(false);
   const [filters, setFilters] = React.useState<FilterState>({
     mealType: "all",
     availability: "all",
   });
+
+  React.useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError(false);
+      try {
+        const result = await getListings();
+        if (!cancelled) {
+          setListings(result.listings);
+          setSource(result.source);
+          if (result.error && result.source === "sample") {
+            // Soft fallback — still show sample data
+            console.warn("Listings fallback:", result.error);
+          }
+        }
+      } catch {
+        if (!cancelled) setError(true);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filtered = React.useMemo(() => {
     return listings.filter((item) => {
@@ -70,6 +93,11 @@ export function DiscoverPage({
             Surplus meals from GEC Banka mess — reserve a portion, no account
             needed.
           </p>
+          {source === "sample" && !loading && (
+            <p className="mt-1 text-[11px] text-muted/70 italic">
+              Showing illustrative examples
+            </p>
+          )}
         </header>
 
         <div className="sticky top-[72px] z-20 -mx-4 px-4 py-3 md:static md:mx-0 md:px-0 md:py-0 bg-ivory/95 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none mb-6 md:mb-8">
@@ -86,7 +114,17 @@ export function DiscoverPage({
         {loading ? (
           <LoadingGrid count={6} />
         ) : error ? (
-          <ErrorState />
+          <ErrorState
+            onRetry={() => {
+              setLoading(true);
+              setError(false);
+              getListings().then((r) => {
+                setListings(r.listings);
+                setSource(r.source);
+                setLoading(false);
+              });
+            }}
+          />
         ) : filtered.length === 0 ? (
           <EmptyState
             title="No matching food right now"
