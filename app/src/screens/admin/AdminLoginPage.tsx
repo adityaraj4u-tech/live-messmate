@@ -1,13 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export function AdminLoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -53,9 +52,6 @@ export function AdminLoginPage() {
     router.refresh();
   }
 
-  const setupError = searchParams.get("setup") === "supabase";
-  const roleError = searchParams.get("error") === "not-admin";
-
   return (
     <main className="min-h-dvh bg-[#F8F7F2] px-4 py-12 flex items-center justify-center">
       <div className="w-full max-w-md">
@@ -66,11 +62,6 @@ export function AdminLoginPage() {
             <h1 className="mt-3 text-3xl font-bold tracking-tight text-[#173728]">Admin sign in</h1>
             <p className="mt-2 text-sm leading-6 text-[#66736A]">Sign in with an administrator account assigned in Supabase.</p>
           </div>
-          {(setupError || roleError) && (
-            <p role="alert" className="mb-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-900">
-              {setupError ? "Supabase is not configured for this deployment." : "Administrator access is required to open the dashboard."}
-            </p>
-          )}
           {error && <p role="alert" className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
