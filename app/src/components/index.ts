@@ -33,3 +33,6 @@ export type {
   MultiStepListingFormProps,
   ListingFormValues,
 } from "./MultiStepListingForm";
+
+export { RotatingFoodBackground } from "./RotatingFoodBackground";
+export { HeroThali } from "./HeroThali";
