@@ -29,7 +29,7 @@ export function RotatingFoodBackground({ className }: { className?: string }) {
             <div
               key={food.label}
               className="food-orbit-position absolute left-1/2 top-1/2"
-              style={{ transform: `rotate(${angle}deg) translateY(calc(var(--food-orbit-radius) * -1))` }}
+              style={{ transform: `rotate(${angle}deg) translateY(var(--food-orbit-offset))` }}
             >
               <div className="food-orbit-counter -translate-x-1/2 -translate-y-1/2">
                 <div className="food-orbit-card group relative h-[88px] w-[112px] overflow-hidden rounded-2xl border border-white/35 bg-white/10 shadow-2xl sm:h-[108px] sm:w-[140px]">
